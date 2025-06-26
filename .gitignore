@@ -146,3 +146,6 @@ cython_debug/
 
 # Rag data
 apps/core/rag_data/*/
+
+# Secrets
+apps/core/config/secrets/*

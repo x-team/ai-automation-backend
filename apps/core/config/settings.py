@@ -2,10 +2,13 @@ import enum
 import os
 from pathlib import Path
 from tempfile import gettempdir
+from typing import Any
 
 from openai import OpenAI
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
+
+from apps.core.utils.google import get_drive_service
 
 TEMP_DIR = Path(gettempdir())
 
@@ -64,6 +67,11 @@ class Settings(BaseSettings):
             api_key=self.openai_api_key,
             organization=self.openai_organization_id,
         )
+
+    @property
+    def drive_service(self) -> Any:
+        """Drive service."""
+        return get_drive_service()
 
     @property
     def db_url(self) -> URL:
