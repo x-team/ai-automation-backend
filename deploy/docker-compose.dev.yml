@@ -1,0 +1,10 @@
+services:
+  api:
+    ports:
+      - "8000:8000"
+    build:
+      context: .
+    volumes:
+      - .:/apps
+    environment:
+      RELOAD: ${RELOAD:-True}

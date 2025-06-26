@@ -1,0 +1,57 @@
+services:
+  api: &main_app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: ${API_IMAGE:-ai-automation:latest}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      BACKEND_HOST: ${BACKEND_HOST:-0.0.0.0}
+      POSTGRES_HOST: ${POSTGRES_HOST:-db-postgres}
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    command: >
+      sh -c "exec poetry run python -m apps"
+
+  db-postgres:
+    image: ankane/pgvector:latest
+    user: ${POSTGRES_USER:-postgres}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - backend-db-data:/var/lib/postgresql/data
+      - ./deploy/init-pgvector.sql:/docker-entrypoint-initdb.d/init-pgvector.sql
+    restart: always
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER:-postgres}
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrations:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: ${API_IMAGE:-ai-automation:latest}
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST:-db-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head"
+volumes:
+  backend-db-data:
+    name: backend-db-data
