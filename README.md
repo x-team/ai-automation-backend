@@ -88,6 +88,7 @@ apps
 │   │   └── settings.py    # Application settings
 │   ├── utils              # Utility functions
 │   ├── docs               # API documentation assets
+│   ├── providers          # External Providers
 │   ├── infra              # Infrastructure components
 │   │   └── sql_alchemy    # Database configuration
 │   │       ├── base.py    # SQLAlchemy base configuration
@@ -105,13 +106,14 @@ apps
 │   │   │       └── repositories # Data repositories
 │   │   ├── schemas        # Data schemas
 │   │   ├── repository_interfaces # Repository interfaces
-│   │   └── services       # Business services
-│   ├── module        # Module
-│   │   ├── controllers    # Module controllers
-│   │   ├── infra          # Module infrastructure
-│   │   ├── schemas        # Module schemas
-│   │   └── services       # Module services
-│   └── ...                # Additional application modules
+│   │   └── services          # Business services
+│   └── agent_name            # Agent Modules
+│       └── module            # Module
+│          ├── controllers    # Module controllers
+│          ├── infra          # Module infrastructure
+│          ├── schemas        # Module schemas
+│          └── services       # Module services
+│
 └── __main__.py            # Application entry point
 ```
 

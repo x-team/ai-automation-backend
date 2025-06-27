@@ -8,6 +8,8 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 
+from apps.modules.quinn.slides.schemas.survey_data_analysis_schema import Slide
+
 
 def get_random_hex_colors(n: int) -> list[str]:
     """Generate n random hex colors."""
@@ -185,20 +187,20 @@ def prepare_chart_data(  # noqa: C901
 
 
 def process_slides_and_generate_charts(
-    slides_definition: list[dict[str, Any]],
+    slides_data: list[Slide],
     survey_data: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """Process slides and generate charts."""
 
     base64_charts = []
 
-    for index, slide in enumerate(slides_definition):
-        if slide.get("chart"):
-            chart_info = slide["chart"]
-            chart_title = chart_info.get("title", slide.get("title", "Untitled"))
-            chart_type = chart_info.get("type")
+    for index, slide in enumerate(slides_data):
+        if slide.chart:
+            chart_info = slide.chart
+            chart_title = chart_info.title or slide.title or "Untitled"
+            chart_type = chart_info.type
 
-            plot_data = prepare_chart_data(chart_info, survey_data)
+            plot_data = prepare_chart_data(chart_info.model_dump(), survey_data)
             if not plot_data:
                 continue
 
@@ -215,7 +217,9 @@ def process_slides_and_generate_charts(
 
             if base64_string:
                 timestamp = time.time_ns()
-                unique_title = f"{slide.get('title', 'chart').lower().replace(' ', '_')}_{timestamp}"
+                unique_title = (
+                    f"{(slide.title or 'chart').lower().replace(' ', '_')}_{timestamp}"
+                )
                 base64_charts.append(
                     {
                         "title": unique_title,

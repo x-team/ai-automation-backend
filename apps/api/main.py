@@ -4,9 +4,11 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import UJSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from apps.api.lifespan import lifespan_setup
 from apps.api.router import api_router
+from apps.core.config import settings
 from apps.core.utils.logger import configure_logging
 
 APP_ROOT = Path(__file__).parent.parent
@@ -39,6 +41,12 @@ def get_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    if settings.storage_provider == "disk":
+        # Static files for disk storage
+        storage_path = Path(settings.disk_storage_path)
+        storage_path.mkdir(parents=True, exist_ok=True)
+        app.mount("/static", StaticFiles(directory=str(storage_path)), name="static")
 
     # Main router for the API.
     app.include_router(router=api_router, prefix="/api")

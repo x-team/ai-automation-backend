@@ -1,7 +1,10 @@
 from typing import Optional
 
+from fastapi import logger as fastapi_logger
+
 from apps.core.utils.google import GoogleDriveFileContentDict
-from apps.modules.quinn.slides.utils.helpers import get_hierarchical_question_structure
+
+logger = fastapi_logger.logger
 
 
 class CreateSlidesService:
@@ -13,21 +16,11 @@ class CreateSlidesService:
     async def execute(
         self,
         source_file_content: GoogleDriveFileContentDict,
-        description_prompt: str,
-        input_spreadsheet_row: int,
+        structure_description: str,
+        analyze_survey_data_prompt: str,
         structured_questions_file_content: Optional[GoogleDriveFileContentDict] = None,
     ) -> dict[str, str]:
         """Execute the Create Slides Service."""
-
-        # Get the hierarchical questions structure (if any)
-        hierarchical_questions = None
-        if structured_questions_file_content:
-            hierarchical_questions = get_hierarchical_question_structure(
-                structured_questions_file_content.data,
-            )
-            print(hierarchical_questions)  # noqa: T201
-
-        # Prompt into LLM
 
         # Get Chart Base 64
 

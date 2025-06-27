@@ -17,7 +17,16 @@ SCOPES = ["https://www.googleapis.com/auth/drive"]
 
 
 # GOOGLE DRIVE
-def get_drive_service() -> Any:
+
+
+class GoogleDriveFileContentDict(BaseModel):
+    """Google Drive File Content Dict."""
+
+    headers: list[str]
+    data: list[dict[str, Any]]
+
+
+def get_google_drive_service() -> Any:
     """Get the drive service."""
 
     creds = None
@@ -45,19 +54,12 @@ def get_google_drive_id(url: str) -> Optional[str]:
     return match.group(1) if match else None
 
 
-class GoogleDriveFileContentDict(BaseModel):
-    """Google Drive File Content Dict."""
-
-    headers: list[str]
-    data: list[dict[str, Any]]
-
-
 def get_google_drive_file_content_dict(
     file: dict[str, str],
 ) -> GoogleDriveFileContentDict:
     """Get the Google Drive file content."""
 
-    drive_service = get_drive_service()
+    drive_service = get_google_drive_service()
     mime_type = file.get("mimeType", "")
     file_id = file.get("id", "")
 

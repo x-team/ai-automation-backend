@@ -2,13 +2,13 @@ import enum
 import os
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Any
+from typing import Any, Literal
 
 from openai import OpenAI
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
-from apps.core.utils.google import get_drive_service
+from apps.core.utils.google import get_google_drive_service
 
 TEMP_DIR = Path(gettempdir())
 
@@ -59,6 +59,25 @@ class Settings(BaseSettings):
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_organization_id: str = os.getenv("OPENAI_ORGANIZATION_ID", "")
     openai_base_url: str = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    base_openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    reasoning_openai_model: str = os.getenv("OPENAI_REASONING_MODEL", "o3-mini")
+
+    # Storage provider
+    storage_provider: Literal["disk", "s3"] = os.getenv("STORAGE_PROVIDER", "disk")  # type: ignore[assignment]
+
+    # AWS S3 settings
+    aws_access_key_id: str = os.getenv("AWS_ACCESS_KEY_ID", "")
+    aws_secret_access_key: str = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+    aws_region: str = os.getenv("AWS_REGION", "us-east-1")
+    s3_bucket_name: str = os.getenv("S3_BUCKET_NAME", "ai-automation-team")
+    s3_bucket_folder: str = os.getenv("S3_BUCKET_FOLDER", "quinn")
+
+    # Disk storage settings
+    disk_storage_path: str = os.getenv("DISK_STORAGE_PATH", "storage/uploads")
+    disk_storage_base_url: str = os.getenv(
+        "DISK_STORAGE_BASE_URL",
+        "http://localhost:8000/static",
+    )
 
     @property
     def openai_client(self) -> OpenAI:
@@ -71,7 +90,7 @@ class Settings(BaseSettings):
     @property
     def drive_service(self) -> Any:
         """Drive service."""
-        return get_drive_service()
+        return get_google_drive_service()
 
     @property
     def db_url(self) -> URL:
