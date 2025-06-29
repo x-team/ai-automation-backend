@@ -149,3 +149,6 @@ apps/core/rag_data/*/
 
 # Secrets
 apps/core/config/secrets/*
+
+# Storage
+apps/core/storage/*

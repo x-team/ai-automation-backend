@@ -17,8 +17,6 @@ SCOPES = ["https://www.googleapis.com/auth/drive"]
 
 
 # GOOGLE DRIVE
-
-
 class GoogleDriveFileContentDict(BaseModel):
     """Google Drive File Content Dict."""
 
@@ -59,17 +57,17 @@ def get_google_drive_file_content_dict(
 ) -> GoogleDriveFileContentDict:
     """Get the Google Drive file content."""
 
-    drive_service = get_google_drive_service()
+    google_drive_service = get_google_drive_service()
     mime_type = file.get("mimeType", "")
     file_id = file.get("id", "")
 
     if mime_type == "application/vnd.google-apps.spreadsheet":
-        request = drive_service.files().export_media(
+        request = google_drive_service.files().export_media(
             fileId=file_id,
             mimeType="text/csv",
         )
     else:
-        request = drive_service.files().get_media(
+        request = google_drive_service.files().get_media(
             fileId=file_id,
             supportsAllDrives=True,
         )
@@ -105,3 +103,23 @@ def get_google_drive_file_content_dict(
         headers=cleaned_headers,
         data=data_body,
     )
+
+
+# GOOGLE SLIDES
+def get_google_slides_service() -> Any:
+    """Get the slides service."""
+
+    creds = None
+
+    try:
+        creds = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE,
+            scopes=SCOPES,
+        )
+    except Exception as err:
+        logger.error("Error getting slides service: %s", err)
+
+    try:
+        return build("slides", "v1", credentials=creds)
+    except Exception as err:
+        logger.error("Error building slides service: %s", err)

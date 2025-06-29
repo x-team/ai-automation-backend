@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import HTTPException
 from fastapi import logger as fastapi_logger
 
@@ -6,28 +8,25 @@ from apps.core.config import settings
 logger = fastapi_logger.logger
 
 
-class ShowGoogleDriveFileService:
-    """Show Google Drive File Service."""
+class UpdateGoogleDriveFileService:
+    """Update Google Drive File Service."""
 
     def __init__(self) -> None:
-        """Initialize the Show Google Drive File Service."""
+        pass
 
     async def execute(
         self,
         file_id: str,
-    ) -> dict[str, str]:
-        """Execute the Show Google Drive File Service."""
+        body: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Update Google Drive file."""
 
         google_drive_service = settings.google_drive_service
 
         try:
-            return (
-                google_drive_service.files()
-                .get(
-                    fileId=file_id,
-                    supportsAllDrives=True,
-                )
-                .execute()
+            return google_drive_service.files().update(
+                fileId=file_id,
+                body=body,
             )
         except Exception as err:
             logger.error(err)

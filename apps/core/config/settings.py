@@ -8,7 +8,7 @@ from openai import OpenAI
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
-from apps.core.utils.google import get_google_drive_service
+from apps.core.utils.google import get_google_drive_service, get_google_slides_service
 
 TEMP_DIR = Path(gettempdir())
 
@@ -72,12 +72,21 @@ class Settings(BaseSettings):
     s3_bucket_name: str = os.getenv("S3_BUCKET_NAME", "ai-automation-team")
     s3_bucket_folder: str = os.getenv("S3_BUCKET_FOLDER", "quinn")
 
+    # Google Drive settings
+    quinn_google_drive_template_slides_id: str = os.getenv(
+        "GOOGLE_DRIVE_TEMPLATE_SLIDES_ID",
+        "102Thay7QPpYp4YIl2osChQPrN4yb-oPy1h7O5ZBeCMs",
+    )
+
     # Disk storage settings
     disk_storage_path: str = os.getenv("DISK_STORAGE_PATH", "storage/uploads")
     disk_storage_base_url: str = os.getenv(
         "DISK_STORAGE_BASE_URL",
         "http://localhost:8000/static",
     )
+
+    # Make Scenario settings
+    quinn_make_scenario_url: str = os.getenv("QUINN_MAKE_SCENARIO_URL", "")
 
     @property
     def openai_client(self) -> OpenAI:
@@ -88,9 +97,14 @@ class Settings(BaseSettings):
         )
 
     @property
-    def drive_service(self) -> Any:
-        """Drive service."""
+    def google_drive_service(self) -> Any:
+        """Google Drive service."""
         return get_google_drive_service()
+
+    @property
+    def google_slides_service(self) -> Any:
+        """Google Slides service."""
+        return get_google_slides_service()
 
     @property
     def db_url(self) -> URL:

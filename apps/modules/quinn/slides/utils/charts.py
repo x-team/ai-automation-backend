@@ -12,20 +12,38 @@ from apps.modules.quinn.slides.schemas.survey_data_analysis_schema import Slide
 
 
 def get_random_hex_colors(n: int) -> list[str]:
-    """Generate n random hex colors."""
+    """Generate n random bright/vibrant hex colors by ensuring high saturation."""
 
-    return [
-        secrets.choice(
-            [
-                "#6D24E5",
-                "#DFCEFC",
-                "#E2E2E3",
-                "#F2F2F2",
-                "#B6B6B6",
-            ],
-        )
-        for _ in range(n)
-    ]
+    colors = []
+    for _ in range(n):
+        hue = secrets.randbelow(360)
+        saturation = 70 + secrets.randbelow(31)
+        lightness = 40 + secrets.randbelow(41)
+
+        c = (1 - abs(2 * lightness / 100 - 1)) * saturation / 100
+        x = c * (1 - abs((hue / 60) % 2 - 1))
+        m = lightness / 100 - c / 2
+
+        if 0 <= hue < 60:
+            r, g, b = c, x, 0.0
+        elif 60 <= hue < 120:
+            r, g, b = x, c, 0.0
+        elif 120 <= hue < 180:
+            r, g, b = 0.0, c, x
+        elif 180 <= hue < 240:
+            r, g, b = 0.0, x, c
+        elif 240 <= hue < 300:
+            r, g, b = x, 0.0, c
+        else:
+            r, g, b = c, 0.0, x
+
+        r = int((r + m) * 255)
+        g = int((g + m) * 255)
+        b = int((b + m) * 255)
+
+        colors.append(f"#{r:02x}{g:02x}{b:02x}")
+
+    return colors
 
 
 def create_bar_chart(chart_data: dict[str, Any], title: str, colors: list[str]) -> str:
