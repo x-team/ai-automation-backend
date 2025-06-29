@@ -87,7 +87,6 @@ apps
 │   ├── config             # Configuration settings
 │   │   └── settings.py    # Application settings
 │   ├── utils              # Utility functions
-│   ├── docs               # API documentation assets
 │   ├── providers          # External Providers
 │   ├── infra              # Infrastructure components
 │   │   └── sql_alchemy    # Database configuration
@@ -96,7 +95,7 @@ apps
 │   │       ├── meta.py    # Metadata configuration
 │   │       ├── migrations # Database migrations
 │   │       └── db_utils.py # Database utilities
-│   └── middleware          # Middleware providers
+│   └── middlewares          # API routers Middlewares
 ├── modules                # Business logic modules
 │   ├── shared             # Shared module
 │   │   ├── controllers    # Business logic controllers

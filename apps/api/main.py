@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from apps.api.lifespan import lifespan_setup
 from apps.api.router import api_router
 from apps.core.config import settings
+from apps.core.middlewares.quinn_server_middleware import QuinnServerMiddleware
 from apps.core.utils.logger import configure_logging
 
 APP_ROOT = Path(__file__).parent.parent
@@ -41,6 +42,9 @@ def get_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Quinn server middleware
+    app.add_middleware(QuinnServerMiddleware)
 
     if settings.storage_provider == "disk":
         # Static files for disk storage

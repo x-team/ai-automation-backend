@@ -48,6 +48,9 @@ class Settings(BaseSettings):
 
     log_level: LogLevel = LogLevel.INFO
 
+    # Quinn API key for authentication
+    quinn_api_key: str = os.getenv("QUINN_API_KEY", "")
+
     # Variables for Postgres
     postgres_host: str = os.getenv("POSTGRES_HOST", "127.0.0.1")
     postgres_port: str = os.getenv("POSTGRES_PORT", "5432")
