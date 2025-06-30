@@ -1,7 +1,8 @@
 from typing import Optional
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
+from pydantic import BaseModel
 
 from apps.core.config import settings
 from apps.core.providers.storage_provider import get_storage_provider
@@ -112,12 +113,18 @@ def get_copy_google_drive_file_service() -> CopyGoogleDriveFileService:
 
 
 # Routes
+class GenerateSlideBody(BaseModel):
+    """Generate slide body."""
+
+    source_file_drive_url: str
+    description_prompt: str
+    input_spreadsheet_row: int
+    structured_questions_file_drive_url: Optional[str] = None
+
+
 @router.post("/generate-slides", response_model=Slideshow)
 async def generate_slides(
-    source_file_drive_url: str,
-    description_prompt: str,
-    input_spreadsheet_row: int,
-    structured_questions_file_drive_url: Optional[str] = None,
+    body: GenerateSlideBody,
     show_google_drive_file_service: ShowGoogleDriveFileService = Depends(
         get_show_google_drive_file_service,
     ),
@@ -142,12 +149,17 @@ async def generate_slides(
     copy_google_drive_file_service: CopyGoogleDriveFileService = Depends(
         get_copy_google_drive_file_service,
     ),
+    x_quinn_api_key: str = Header(None),
 ) -> Slideshow:
     """
     Generates slides for Quinn.
 
     It returns 200 if the slides are generated.
     """
+    source_file_drive_url = body.source_file_drive_url
+    description_prompt = body.description_prompt
+    input_spreadsheet_row = body.input_spreadsheet_row
+    structured_questions_file_drive_url = body.structured_questions_file_drive_url
 
     source_file_drive_id = get_google_drive_id(source_file_drive_url)
     if not source_file_drive_id:

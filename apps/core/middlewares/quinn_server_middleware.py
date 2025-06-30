@@ -32,7 +32,7 @@ class QuinnServerMiddleware(BaseHTTPMiddleware):
         """
         super().__init__(app)
         self.restricted_paths = restricted_paths or [
-            "/api/v1/quinn/slides",
+            "/api/v1/quinn/generate-slides",
         ]
 
     async def dispatch(
@@ -53,16 +53,23 @@ class QuinnServerMiddleware(BaseHTTPMiddleware):
         Raises:
             HTTPException: If Quinn API key is missing or invalid
         """
+        logger.debug(f"Request to {request.url.path} - Method: {request.method}")
 
         if request.url.path not in (self.restricted_paths or []):
+            logger.debug(
+                f"Path {request.url.path} not in restricted paths: {self.restricted_paths}",
+            )
             return await call_next(request)
 
-        if not settings.quinn_api_key:
-            logger.warning("No Quinn API key configured - skipping API key validation")
-            return await call_next(request)
+        logger.info(f"Protecting path {request.url.path} - checking API key")
+        if not settings.quinn_api_key or settings.quinn_api_key.strip() == "":
+            logger.error("No Quinn API key configured in environment variables")
+            raise HTTPException(
+                status_code=500,
+                detail="Server configuration error: Quinn API key not configured. Please contact admin",
+            )
 
         quinn_api_key = request.headers.get("X-Quinn-API-Key")
-
         if not quinn_api_key:
             logger.warning(f"Quinn API key missing for request to {request.url.path}")
             raise HTTPException(
@@ -70,7 +77,7 @@ class QuinnServerMiddleware(BaseHTTPMiddleware):
                 detail="Quinn API key required. Please include 'X-Quinn-API-Key' header.",
             )
 
-        if quinn_api_key != settings.quinn_api_key:
+        if quinn_api_key.strip() != settings.quinn_api_key.strip():
             logger.warning(
                 f"Invalid Quinn API key provided for request to {request.url.path}",
             )
