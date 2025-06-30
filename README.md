@@ -76,10 +76,10 @@ For more details, refer to the [Pydantic BaseSettings documentation](https://pyd
 
 ```bash
 apps
-├── tests                  # Test suite
 ├── api                    # API endpoints
 │   ├── v1                 # Version 1 of the API
 │   │   └── routers        # API route handlers
+│   ├── tests              # Test suite for routes
 │   ├── main.py            # FastAPI application setup
 │   ├── lifespan.py        # Application lifecycle management
 │   └── router.py          # Main router configuration

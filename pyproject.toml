@@ -124,6 +124,7 @@ lint.ignore = [
     "PLR0913", # Too many arguments for function call
     "D106",    # Missing docstring in public nested class,
     "E902",    # Exit code 1
+    "S101",    # Use of assert detected
 ]
 exclude = [
     "apps/core/infra/sql_alchemy/migrations",
