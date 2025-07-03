@@ -24,7 +24,7 @@ def split_text(text: str, chunk_size: int = 2000, overlap: int = 100) -> List[st
     Splits text into chunks of roughly `chunk_size` characters with an overlap of `overlap` words between chunks.
 
     Uses larger chunks and smaller overlap for better efficiency.
-    """  # noqa: E501
+    """
 
     words = text.split()
     chunks = []

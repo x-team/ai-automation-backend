@@ -33,4 +33,7 @@ class CopyGoogleDriveFileService:
             )
         except Exception as err:
             logger.error(err)
-            raise HTTPException(status_code=404, detail="File not found") from err
+            raise HTTPException(
+                status_code=404,
+                detail="Copy Google Drive - file not found",
+            ) from err

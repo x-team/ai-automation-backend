@@ -152,3 +152,7 @@ apps/core/config/secrets/*
 
 # Storage
 apps/core/storage/*
+
+# Crew AI
+apps/modules/ava/messages/infra/crew_ai/knowledge/*
+knowledge

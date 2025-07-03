@@ -24,10 +24,17 @@ class UpdateGoogleDriveFileService:
         google_drive_service = settings.google_drive_service
 
         try:
-            return google_drive_service.files().update(
-                fileId=file_id,
-                body=body,
+            return (
+                google_drive_service.files()
+                .update(
+                    fileId=file_id,
+                    body=body,
+                )
+                .execute()
             )
         except Exception as err:
             logger.error(err)
-            raise HTTPException(status_code=404, detail="File not found") from err
+            raise HTTPException(
+                status_code=404,
+                detail="Update Google Drive - file not found",
+            ) from err

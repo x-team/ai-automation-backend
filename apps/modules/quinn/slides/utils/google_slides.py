@@ -1,6 +1,8 @@
-from typing import Any
+from typing import Any, List
 
 from fastapi import logger as fastapi_logger
+
+from apps.modules.quinn.slides.schemas.survey_data_analysis_schema import Slide
 
 logger = fastapi_logger.logger
 
@@ -116,26 +118,26 @@ def find_layout_and_placeholders_for_new_structure(  # noqa: C901, PLR0912, PLR0
 
     if has_title and "TITLE" not in best_placeholder_map:
         logger.warning(
-            f"Warning: Title expected but no 'TITLE', 'CENTERED_TITLE', or 'SUBTITLE' placeholder mapped for layout {best_layout_id}.",  # noqa: E501
+            f"Warning: Title expected but no 'TITLE', 'CENTERED_TITLE', or 'SUBTITLE' placeholder mapped for layout {best_layout_id}.",
         )
     if has_bullets and "BULLETS" not in best_placeholder_map:
         logger.warning(
-            f"Warning: Bullet points expected for slide_type '{slide_type}' but no 'BODY' placeholder mapped for 'BULLETS' on layout {best_layout_id}.",  # noqa: E501
+            f"Warning: Bullet points expected for slide_type '{slide_type}' but no 'BODY' placeholder mapped for 'BULLETS' on layout {best_layout_id}.",
         )
     if has_description and "DESCRIPTION" not in best_placeholder_map:
         logger.warning(
-            f"Warning: Description expected for slide_type '{slide_type}' but no ('BODY' or 'SUBTITLE') placeholder mapped for 'DESCRIPTION' on layout {best_layout_id}.",  # noqa: E501
+            f"Warning: Description expected for slide_type '{slide_type}' but no ('BODY' or 'SUBTITLE') placeholder mapped for 'DESCRIPTION' on layout {best_layout_id}.",
         )
     if has_image and "IMAGE" not in best_placeholder_map:
         logger.warning(
-            f"Warning: Image expected but no 'PICTURE' placeholder mapped for 'IMAGE' on layout {best_layout_id}.",  # noqa: E501
+            f"Warning: Image expected but no 'PICTURE' placeholder mapped for 'IMAGE' on layout {best_layout_id}.",
         )
 
     return best_layout_id, best_placeholder_map
 
 
 def create_google_slides_presentation(  # noqa: C901
-    slides_json_data: list[dict[str, Any]],
+    slides_json_data: List[Slide],
     presentation_id: str,
     available_layouts: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -144,7 +146,8 @@ def create_google_slides_presentation(  # noqa: C901
     logger.info(f"Preparing requests for presentation ID: {presentation_id}")
     requests = []
 
-    for i, slide_data in enumerate(slides_json_data):
+    for i, slide_data_model in enumerate(slides_json_data):
+        slide_data = slide_data_model.model_dump()
         slide_object_id = f"slide_{i}"
         slide_type = slide_data.get("slide_type")
 
@@ -167,7 +170,7 @@ def create_google_slides_presentation(  # noqa: C901
             continue
 
         logger.info(
-            f"Slide {i} ({slide_type}): Using layoutId '{chosen_layout_id}'. Master placeholders found: {master_placeholders}",  # noqa: E501
+            f"Slide {i} ({slide_type}): Using layoutId '{chosen_layout_id}'. Master placeholders found: {master_placeholders}",
         )
 
         create_slide_params: dict[str, Any] = {

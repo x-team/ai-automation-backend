@@ -11,7 +11,7 @@ maintainers = [
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4"
+python = ">=3.10,<3.14"
 fastapi = "^0.115.6"
 uvicorn = { version = "^0.34.0", extras = ["standard"] }
 gunicorn = "^23.0.0"
@@ -36,6 +36,7 @@ google-auth-httplib2 = "^0.2.0"
 google-auth-oauthlib = "^1.2.2"
 matplotlib = "^3.10.3"
 boto3 = "^1.38.46"
+crewai = "^0.134.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
@@ -125,6 +126,7 @@ lint.ignore = [
     "D106",    # Missing docstring in public nested class,
     "E902",    # Exit code 1
     "S101",    # Use of assert detected
+    "E501",    # Line too long
 ]
 exclude = [
     "apps/core/infra/sql_alchemy/migrations",

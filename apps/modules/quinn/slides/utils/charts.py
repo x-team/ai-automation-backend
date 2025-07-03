@@ -114,9 +114,9 @@ def create_pie_chart(
         colors=colors,
         autopct="%1.1f%%",
         startangle=90,
-        wedgeprops={"width": 0.4, "edgecolor": "w"},
+        wedgeprops={"width": 0.4, "edgecolor": "black"},
         pctdistance=0.8,
-        textprops={"color": "w", "weight": "bold"},
+        textprops={"color": "black", "weight": "bold"},
     )
     plt.title(title, fontsize=16, pad=20)
     plt.axis("equal")

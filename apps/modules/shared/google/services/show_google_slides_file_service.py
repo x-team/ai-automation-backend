@@ -23,9 +23,16 @@ class ShowGoogleSlidesFileService:
         google_slides_service = settings.google_slides_service
 
         try:
-            return google_slides_service.presentations().get(
-                presentationId=presentation_id,
+            return (
+                google_slides_service.presentations()
+                .get(
+                    presentationId=presentation_id,
+                )
+                .execute()
             )
         except Exception as err:
             logger.error(err)
-            raise HTTPException(status_code=404, detail="File not found") from err
+            raise HTTPException(
+                status_code=404,
+                detail="Show Google Slides - file not found",
+            ) from err

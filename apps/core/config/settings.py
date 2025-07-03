@@ -75,10 +75,10 @@ class Settings(BaseSettings):
     s3_bucket_name: str = os.getenv("S3_BUCKET_NAME", "ai-automation-team")
     s3_bucket_folder: str = os.getenv("S3_BUCKET_FOLDER", "quinn")
 
-    # Google Drive settings
-    quinn_google_drive_template_slides_id: str = os.getenv(
-        "GOOGLE_DRIVE_TEMPLATE_SLIDES_ID",
-        "102Thay7QPpYp4YIl2osChQPrN4yb-oPy1h7O5ZBeCMs",
+    # Google Cloud
+    google_cloud_impersonated_account: str = os.getenv(
+        "GOOGLE_CLOUD_IMPERSONATED_ACCOUNT",
+        "angie@x-team.com",
     )
 
     # Disk storage settings
@@ -88,8 +88,12 @@ class Settings(BaseSettings):
         "http://localhost:8000/static",
     )
 
-    # Make Scenario settings
+    # Quinn Settings
     quinn_make_scenario_url: str = os.getenv("QUINN_MAKE_SCENARIO_URL", "")
+    quinn_google_drive_template_slides_id: str = os.getenv(
+        "QUINN_GOOGLE_DRIVE_TEMPLATE_SLIDES_ID",
+        "102Thay7QPpYp4YIl2osChQPrN4yb-oPy1h7O5ZBeCMs",
+    )
 
     @property
     def openai_client(self) -> OpenAI:
@@ -102,12 +106,12 @@ class Settings(BaseSettings):
     @property
     def google_drive_service(self) -> Any:
         """Google Drive service."""
-        return get_google_drive_service()
+        return get_google_drive_service(self.google_cloud_impersonated_account)
 
     @property
     def google_slides_service(self) -> Any:
         """Google Slides service."""
-        return get_google_slides_service()
+        return get_google_slides_service(self.google_cloud_impersonated_account)
 
     @property
     def db_url(self) -> URL:

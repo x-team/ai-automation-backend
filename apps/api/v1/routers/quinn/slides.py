@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 import httpx
@@ -161,11 +162,28 @@ async def generate_slides(
     input_spreadsheet_row = body.input_spreadsheet_row
     structured_questions_file_drive_url = body.structured_questions_file_drive_url
 
+    # Drive - Copy Template Slides
+    google_drive_copy_file = await google_drive_file_controller.copy(
+        settings.quinn_google_drive_template_slides_id,
+        copy_google_drive_file_service,
+    )
+    if not google_drive_copy_file or not google_drive_copy_file["id"]:
+        raise HTTPException(status_code=404, detail="Template slides file not found")
+
+    # Drive - Update file name
+    await google_drive_file_controller.update(
+        google_drive_copy_file.get("id", ""),
+        {
+            "name": f"Quinn_presentation_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
+        },
+        update_google_drive_file_service,
+    )
+
+    # Get the dict content of the source file
     source_file_drive_id = get_google_drive_id(source_file_drive_url)
     if not source_file_drive_id:
         raise HTTPException(status_code=400, detail="Invalid source file drive URL")
 
-    # Get the dict content of the source file
     source_file_content = await google_drive_file_controller.show(
         source_file_drive_id,
         show_google_drive_file_service,
@@ -208,40 +226,27 @@ async def generate_slides(
         hierarchical_questions,
     )
 
-    # Drive - Copy Template Slides
-    google_drive_copy_file = await google_drive_file_controller.copy(
-        source_file_drive_id,
-        copy_google_drive_file_service,
-    )
-    if not google_drive_copy_file or not google_drive_copy_file["id"]:
-        raise HTTPException(status_code=404, detail="Template slides file not found")
-
-    # Drive - Update file name
-    await google_drive_file_controller.update(
-        google_drive_copy_file.get("id", ""),
-        {
-            "name": f"Quinn_presentation_{google_drive_copy_file.get('createdTime')}",
-        },
-        update_google_drive_file_service,
-    )
-
     # Slides - Find presentation
     google_slides_find_presentation = await google_slides_file_controller.show(
         google_drive_copy_file["id"],
         show_google_slides_file_service,
     )
-    if not google_slides_find_presentation or not google_slides_find_presentation["id"]:
+    if (
+        not google_slides_find_presentation
+        or not google_slides_find_presentation["presentationId"]
+    ):
         raise HTTPException(status_code=404, detail="Slides file not found")
 
     # Slides - Upload Slides to Google Drive
+    requests = create_google_slides_presentation(
+        slides_data.slides,
+        google_slides_find_presentation["presentationId"],
+        google_slides_find_presentation["layouts"],
+    )
     await google_slides_file_controller.update(
-        google_slides_find_presentation["id"],
+        google_slides_find_presentation["presentationId"],
         {
-            "requests": create_google_slides_presentation(
-                source_file_content.data,
-                google_slides_find_presentation["id"],
-                google_slides_find_presentation["layouts"],
-            ),
+            "requests": requests,
         },
         update_google_slides_file_service,
     )
@@ -251,7 +256,7 @@ async def generate_slides(
         await client.post(
             settings.quinn_make_scenario_url,
             data={
-                "presentation_url": f"https://docs.google.com/presentation/d/{google_drive_copy_file['id']}/view",
+                "presentation_url": f"https://docs.google.com/presentation/d/{google_slides_find_presentation['presentationId']}/view",
                 "row": input_spreadsheet_row,
             },
             timeout=30,

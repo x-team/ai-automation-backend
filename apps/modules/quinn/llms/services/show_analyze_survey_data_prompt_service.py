@@ -225,4 +225,4 @@ class ShowAnalyzeSurveyDataPromptService:
             * The `structure_description` guides *how* you say it, while the JSON structure defined above dictates the *format* of your output.
 
             Produce ONLY the JSON object as your final output. Do not include any explanatory text before or after the JSON object.
-        """  # noqa: E501
+        """

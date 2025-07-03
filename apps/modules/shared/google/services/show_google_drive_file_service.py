@@ -31,4 +31,7 @@ class ShowGoogleDriveFileService:
             )
         except Exception as err:
             logger.error(err)
-            raise HTTPException(status_code=404, detail="File not found") from err
+            raise HTTPException(
+                status_code=404,
+                detail="Show Google Drive - file not found",
+            ) from err

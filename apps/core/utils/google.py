@@ -1,5 +1,6 @@
 import csv
 import io
+import os
 import re
 from typing import Any, Optional
 
@@ -13,7 +14,6 @@ logger = fastapi_logger.logger
 
 
 SERVICE_ACCOUNT_FILE = "apps/core/config/secrets/service_account.json"
-SCOPES = ["https://www.googleapis.com/auth/drive"]
 
 
 # GOOGLE DRIVE
@@ -24,7 +24,7 @@ class GoogleDriveFileContentDict(BaseModel):
     data: list[dict[str, Any]]
 
 
-def get_google_drive_service() -> Any:
+def get_google_drive_service(impersonated_account: str) -> Any:
     """Get the drive service."""
 
     creds = None
@@ -32,7 +32,8 @@ def get_google_drive_service() -> Any:
     try:
         creds = service_account.Credentials.from_service_account_file(
             SERVICE_ACCOUNT_FILE,
-            scopes=SCOPES,
+            scopes=["https://www.googleapis.com/auth/drive"],
+            subject=impersonated_account,
         )
     except Exception as err:
         logger.error("Error getting drive service: %s", err)
@@ -57,7 +58,12 @@ def get_google_drive_file_content_dict(
 ) -> GoogleDriveFileContentDict:
     """Get the Google Drive file content."""
 
-    google_drive_service = get_google_drive_service()
+    google_drive_service = get_google_drive_service(
+        os.getenv(
+            "GOOGLE_CLOUD_IMPERSONATED_ACCOUNT",
+            "angie@x-team.com",
+        ),
+    )
     mime_type = file.get("mimeType", "")
     file_id = file.get("id", "")
 
@@ -106,7 +112,7 @@ def get_google_drive_file_content_dict(
 
 
 # GOOGLE SLIDES
-def get_google_slides_service() -> Any:
+def get_google_slides_service(impersonated_account: str) -> Any:
     """Get the slides service."""
 
     creds = None
@@ -114,7 +120,7 @@ def get_google_slides_service() -> Any:
     try:
         creds = service_account.Credentials.from_service_account_file(
             SERVICE_ACCOUNT_FILE,
-            scopes=SCOPES,
+            scopes=["https://www.googleapis.com/auth/presentations"],
         )
     except Exception as err:
         logger.error("Error getting slides service: %s", err)

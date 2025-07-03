@@ -1,4 +1,8 @@
-from typing import Optional  # noqa: I001
+import asyncio
+from typing import Optional
+
+from fastapi import HTTPException
+
 from apps.core.providers.storage_provider.repository_interfaces.storage_repository_interface import (
     IStorageProvider,
 )
@@ -46,11 +50,18 @@ class CreateChartsImageService:
         )
 
         # Upload charts to S3
-        for chart in generated_charts_base64:
-            await self.storage_provider.upload_file(
-                chart["data"],
-                f"{chart['title']}.png",
+        try:
+            await asyncio.gather(
+                *[
+                    self.storage_provider.upload_file(
+                        chart["data"],
+                        f"{chart['title']}.png",
+                    )
+                    for chart in generated_charts_base64
+                ],
             )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
         # Return Charts URLs
         index_to_title = {
