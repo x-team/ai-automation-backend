@@ -13,4 +13,6 @@ class MessageRequestController:
     ) -> str:
         """Create a message."""
 
-        return await create_message_service.execute(content)
+        return await create_message_service.execute(
+            content,
+        )

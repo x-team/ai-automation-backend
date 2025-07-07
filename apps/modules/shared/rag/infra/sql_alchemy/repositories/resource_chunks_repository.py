@@ -1,12 +1,13 @@
 from typing import List, Optional
 
-from sqlalchemy import text
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.core.utils.files import text_to_vector
 from apps.modules.shared.rag.infra.sql_alchemy.models.resource_chunks import (
     ResourceChunkModel,
 )
+from apps.modules.shared.rag.infra.sql_alchemy.models.resources import ResourceModel
 from apps.modules.shared.rag.repository_interfaces.resource_chunks_repository_interface import (
     IResourceChunksRepository,
 )
@@ -39,33 +40,26 @@ class ResourceChunksRepository(
     ) -> List[ResourceChunkSearchResponse]:
         """Search resource chunks by embedding similarity."""
 
-        if resource_names:
-            stmt = text(
-                """
-                SELECT rc.*, r.name, rc.embedding <-> cast(:query as vector) as distance
-                FROM resource_chunks rc
-                JOIN resources r ON rc.resource_id = r.id
-                WHERE r.name IN :resource_names
-                ORDER BY distance ASC
-                LIMIT :top_k
-            """,
-            )
-        else:
-            stmt = text(
-                """
-                SELECT rc.*, r.name, rc.embedding <-> cast(:query as vector) as distance
-                FROM resource_chunks rc
-                JOIN resources r ON rc.resource_id = r.id
-                ORDER BY distance ASC
-                LIMIT :top_k
-            """,
-            )
-
         vector = text_to_vector(query)
-        query_result = await self.db.execute(
-            stmt,
-            {"query": vector, "top_k": top_k, "resource_names": resource_names},
+        distance_expression = ResourceChunkModel.embedding.l2_distance(vector).label(
+            "distance",
         )
+        stmt = (
+            select(
+                ResourceChunkModel.text,
+                ResourceChunkModel.chunk_index,
+                ResourceModel.name,
+                distance_expression,
+            )
+            .join(ResourceModel, ResourceChunkModel.resource_id == ResourceModel.id)
+            .order_by("distance")
+            .limit(top_k)
+        )
+
+        if resource_names:
+            stmt = stmt.where(ResourceModel.name.in_(resource_names))
+
+        query_result = await self.db.execute(stmt)
 
         results = query_result.mappings().all()
         return [

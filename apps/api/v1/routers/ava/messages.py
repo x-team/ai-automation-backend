@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.modules.ava.messages.controllers.message_request_controller import (
     MessageRequestController,
@@ -16,10 +17,18 @@ message_request_controller = MessageRequestController()
 
 
 # Dependency injections
-def get_create_message_service() -> CreateMessageService:
+def get_session_factory(request: Request) -> async_sessionmaker[AsyncSession]:
+    """Get session factory from request state."""
+
+    return request.app.state.db_session_factory
+
+
+def get_create_message_service(
+    session_factory: async_sessionmaker[AsyncSession] = Depends(get_session_factory),
+) -> CreateMessageService:
     """Get create message service."""
 
-    return CreateMessageService()
+    return CreateMessageService(session_factory)
 
 
 # Routes

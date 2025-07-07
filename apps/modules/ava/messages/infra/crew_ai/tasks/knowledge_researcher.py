@@ -1,4 +1,5 @@
 from crewai import Task
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.modules.ava.messages.infra.crew_ai.agents.knowledge_researcher import (
     KnowledgeResearcher,
@@ -14,6 +15,7 @@ class KnowledgeResearcherTask(Task):
     def __init__(
         self,
         agent: KnowledgeResearcher,
+        session_factory: async_sessionmaker[AsyncSession],
     ) -> None:
         super().__init__(
             description="""
@@ -30,6 +32,7 @@ class KnowledgeResearcherTask(Task):
                 AvaSearchHandbookFAQ(
                     name="Search Handbook FAQ",
                     description="Retrieves accurate, up-to-date information from the X-Team Handbook FAQ. It includes official policies, internal procedures, and details about key people in the company — such as their roles, responsibilities, and areas of ownership.",
+                    session_factory=session_factory,
                 ),
             ],
             async_execution=True,

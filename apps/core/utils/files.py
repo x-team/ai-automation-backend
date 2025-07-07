@@ -100,13 +100,12 @@ def get_embeddings_rag_batch(
 def text_to_vector(
     text: str,
     model: str = "text-embedding-3-small",
-) -> str:
+) -> List[float]:
     """Convert text to PostgreSQL vector format."""
 
     response = settings.openai_client.embeddings.create(
         model=model,
         input=text,
     )
-    embedding = response.data[0].embedding
 
-    return "[" + ",".join(str(x) for x in embedding) + "]"
+    return response.data[0].embedding

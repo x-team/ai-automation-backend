@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import gettempdir
 from typing import Any, Literal
 
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
@@ -99,6 +99,14 @@ class Settings(BaseSettings):
     def openai_client(self) -> OpenAI:
         """OpenAI client."""
         return OpenAI(
+            api_key=self.openai_api_key,
+            organization=self.openai_organization_id,
+        )
+
+    @property
+    def openai_client_async(self) -> AsyncOpenAI:
+        """Async OpenAI client."""
+        return AsyncOpenAI(
             api_key=self.openai_api_key,
             organization=self.openai_organization_id,
         )

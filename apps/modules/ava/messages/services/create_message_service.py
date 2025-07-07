@@ -1,5 +1,6 @@
 from crewai import Crew, Process
 from fastapi import logger as fastapi_logger
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.modules.ava.messages.infra.crew_ai.agents.knowledge_researcher import (
     KnowledgeResearcher,
@@ -24,8 +25,8 @@ task_router = RequestRouterTask(request_router)
 class CreateMessageService:
     """Service for creating messages."""
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, session_factory: async_sessionmaker[AsyncSession]) -> None:
+        self._session_factory = session_factory
 
     async def execute(
         self,
@@ -35,6 +36,7 @@ class CreateMessageService:
 
         task_researcher = KnowledgeResearcherTask(
             knowledge_researcher,
+            self._session_factory,
         )
 
         # TODO: move this to a repository
