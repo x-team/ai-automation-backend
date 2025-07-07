@@ -33,7 +33,7 @@ def get_rag_resources_service(
     resource_chunks_repository = ResourceChunksRepository(db)
 
     return CreateRAGResourcesService(
-        folder_path="apps/core/rag_data/resources",
+        folder_path="apps/core/rag_storage",
         resources_repository=resources_repository,
         resource_chunks_repository=resource_chunks_repository,
     )

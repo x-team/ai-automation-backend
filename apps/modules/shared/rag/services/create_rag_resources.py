@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import logger as fastapi_logger
 
 from apps.core.utils.files import (
+    extract_text_from_csv,
     extract_text_from_pdf,
     get_embeddings_rag_batch,
     split_text,
@@ -45,19 +46,28 @@ class CreateRAGResourcesService:
         """Execute the RAG resources service."""
 
         for filename in os.listdir(self.folder_path):
-            if not filename.endswith(".pdf"):
+            # Skip files that are not PDF or CSV
+            if not filename.endswith((".pdf", ".csv")):
                 continue
 
-            pdf_path = Path(self.folder_path) / filename
-            resource_name = pdf_path.name
+            file_path = Path(self.folder_path) / filename
+            resource_name = file_path.name
 
             resource_exists = await self.resources_repository.get_by_name(resource_name)
             if resource_exists:
                 logger.info(f"Resource '{resource_name}' already exists. Skipping...")
                 continue
 
-            # Extract text from PDF
-            content = extract_text_from_pdf(pdf_path)
+            # Extract text based on file type
+            if filename.endswith(".pdf"):
+                content = extract_text_from_pdf(file_path)
+            elif filename.endswith(".csv"):
+                content = extract_text_from_csv(file_path)
+            else:
+                logger.warning(
+                    f"Unsupported file type for '{resource_name}'. Skipping...",
+                )
+                continue
 
             # Check for null bytes and handle them
             if "\x00" in content:

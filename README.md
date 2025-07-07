@@ -88,6 +88,7 @@ apps
 │   │   └── settings.py    # Application settings
 │   ├── utils              # Utility functions
 │   ├── providers          # External Providers
+│   ├── rag_storage        # Storage for RAG resources (pdf or csv)
 │   ├── infra              # Infrastructure components
 │   │   └── sql_alchemy    # Database configuration
 │   │       ├── base.py    # SQLAlchemy base configuration

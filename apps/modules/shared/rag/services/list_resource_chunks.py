@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from apps.modules.shared.rag.infra.sql_alchemy.models.resource_chunks import (
     ResourceChunkModel,
@@ -27,12 +27,14 @@ class ListResourceChunksService:
         self,
         query: str,
         chunk_top_k: int = 5,
+        resource_names: Optional[List[str]] = None,
     ) -> List[ResourceChunkSearchResponse]:
         """Execute the list resources service."""
 
         resource_chunks = await self.resource_chunks_repository.search_by_embedding(
             query=query,
             top_k=chunk_top_k,
+            resource_names=resource_names,
         )
         return [
             ResourceChunkSearchResponse.model_validate(resource_chunk)

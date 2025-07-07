@@ -32,4 +32,7 @@ async def create_ava_message_request(
 
     content = body.content
 
-    return await message_request_controller.create(content, create_message_service)
+    return await message_request_controller.create(
+        content,
+        create_message_service,
+    )

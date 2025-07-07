@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 from typing import List
 
@@ -16,6 +17,30 @@ def extract_text_from_pdf(pdf_path: Path) -> str:
             page_text = page.extract_text()
             if page_text:
                 text += page_text + "\n"
+    return text
+
+
+def extract_text_from_csv(csv_path: Path) -> str:
+    """Extracts text from a CSV file by converting it to a readable format."""
+
+    text = ""
+    with csv_path.open("r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        headers = next(reader, None)
+
+        if headers:
+            text += f"CSV Headers: {', '.join(headers)}\n\n"
+
+            for row_num, row in enumerate(reader, 1):
+                if len(row) == len(headers):
+                    row_text = f"Row {row_num}:\n"
+                    for header, value in zip(headers, row):
+                        if value.strip():
+                            row_text += f"  {header}: {value}\n"
+                    text += row_text + "\n"
+                else:
+                    text += f"Row {row_num}: {', '.join(row)}\n\n"
+
     return text
 
 

@@ -112,7 +112,7 @@ def get_google_drive_file_content_dict(
 
 
 # GOOGLE SLIDES
-def get_google_slides_service(impersonated_account: str) -> Any:
+def get_google_slides_service() -> Any:
     """Get the slides service."""
 
     creds = None

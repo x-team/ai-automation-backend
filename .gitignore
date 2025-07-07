@@ -145,14 +145,8 @@ dmypy.json
 cython_debug/
 
 # Rag data
-apps/core/rag_data/*/
+apps/core/rag_storage/*
 
 # Secrets
 apps/core/config/secrets/*
 
-# Storage
-apps/core/storage/*
-
-# Crew AI
-apps/modules/ava/messages/infra/crew_ai/knowledge/*
-knowledge

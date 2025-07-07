@@ -2,15 +2,23 @@ from crewai import Crew, Process
 from fastapi import logger as fastapi_logger
 
 from apps.modules.ava.messages.infra.crew_ai.agents.knowledge_researcher import (
-    knowledge_researcher,
+    KnowledgeResearcher,
 )
-from apps.modules.ava.messages.infra.crew_ai.agents.request_router import request_router
+from apps.modules.ava.messages.infra.crew_ai.agents.request_router import RequestRouter
 from apps.modules.ava.messages.infra.crew_ai.tasks.knowledge_researcher import (
-    task_research,
+    KnowledgeResearcherTask,
 )
-from apps.modules.ava.messages.infra.crew_ai.tasks.request_router import task_route
+from apps.modules.ava.messages.infra.crew_ai.tasks.request_router import (
+    RequestRouterTask,
+)
 
 logger = fastapi_logger.logger
+
+
+request_router = RequestRouter()
+knowledge_researcher = KnowledgeResearcher()
+
+task_router = RequestRouterTask(request_router)
 
 
 class CreateMessageService:
@@ -19,17 +27,25 @@ class CreateMessageService:
     def __init__(self) -> None:
         pass
 
-    async def execute(self, content: str) -> str:
+    async def execute(
+        self,
+        content: str,
+    ) -> str:
         """Execute the service to create a message."""
 
-        crew = Crew(
-            agents=[request_router, knowledge_researcher],
-            tasks=[task_route, task_research],
-            process=Process.sequential,
-            verbose=True,
+        task_researcher = KnowledgeResearcherTask(
+            knowledge_researcher,
         )
 
-        result = crew.kickoff(
+        # TODO: move this to a repository
+        crew = Crew(
+            agents=[request_router, knowledge_researcher],
+            tasks=[task_router, task_researcher],
+            process=Process.sequential,
+            verbose=False,
+        )
+
+        result = await crew.kickoff_async(
             inputs={
                 "user_query": content,
             },

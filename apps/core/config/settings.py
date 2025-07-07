@@ -111,7 +111,7 @@ class Settings(BaseSettings):
     @property
     def google_slides_service(self) -> Any:
         """Google Slides service."""
-        return get_google_slides_service(self.google_cloud_impersonated_account)
+        return get_google_slides_service()
 
     @property
     def db_url(self) -> URL:
