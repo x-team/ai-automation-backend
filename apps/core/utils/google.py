@@ -87,8 +87,13 @@ def get_google_drive_file_content_dict(
 
     fh.seek(0)
     csv_content = fh.read()
+    try:
+        decoded_content = csv_content.decode("utf-8")
+    except UnicodeDecodeError:
+        logger.info("utf-8 decoding failed, falling back to latin-1")
+        decoded_content = csv_content.decode("latin-1")
 
-    csv_file = io.StringIO(csv_content.decode("utf-8"))
+    csv_file = io.StringIO(decoded_content)
     reader = csv.reader(csv_file)
     headers = next(reader)
 

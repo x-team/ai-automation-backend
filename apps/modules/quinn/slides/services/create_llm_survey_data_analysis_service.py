@@ -31,7 +31,7 @@ class CreateLLMSurveyDataAnalysisService:
 
         # TODO: Add this to a repository
         response = settings.openai_client.responses.parse(
-            model=settings.reasoning_openai_model,
+            model=settings.base_reasoning_openai_model,
             input=[
                 {"role": "system", "content": analyze_survey_data_prompt},
                 {

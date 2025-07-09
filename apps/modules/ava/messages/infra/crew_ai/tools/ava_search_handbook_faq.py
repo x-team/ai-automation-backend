@@ -47,23 +47,23 @@ class AvaSearchHandbookFAQ(BaseTool):
             )
 
             response = await settings.openai_client_async.responses.create(
-                model=settings.reasoning_openai_model,
+                model=settings.base_openai_model,
                 input=[
                     {
                         "role": "system",
                         "content": f"""
-                    ## User asked
-                    {query}
+                            ## User asked
+                            {query}
 
-                    ## Based on the vector search results
-                    {vector_search}
+                            ## Based on the vector search results
+                            {vector_search}
 
-                    ## How to answer the user's question:
-                    Write a clear, complete, and helpful answer to the user's question. Focus on the most relevant information, but include supporting details from the results if they provide useful context or depth.
-                    If multiple entries relate to the same person or topic, group them logically. Do not include information that is unrelated to the user's question or about different topics or people.
-                    If the search results include additional context, such as email addresses or URLs that relate to the user's question, make sure to include them in your answer — even if they were not explicitly asked for.
-                    Respond in tiny paragraphs form, but make sure the information flows logically and doesn't repeat unnecessarily.
-                """,
+                            ## How to answer the user's question:
+                            Write a clear, complete, and helpful answer to the user's question. Focus on the most relevant information, but include supporting details from the results if they provide useful context or depth.
+                            If multiple entries relate to the same person or topic, group them logically. Do not include information that is unrelated to the user's question or about different topics or people.
+                            If the search results include additional context, such as email addresses or URLs that relate to the user's question, make sure to include them in your answer — even if they were not explicitly asked for.
+                            Respond in tiny paragraphs form, but make sure the information flows logically and doesn't repeat unnecessarily.
+                        """,
                     },
                 ],
             )

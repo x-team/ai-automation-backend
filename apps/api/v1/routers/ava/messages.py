@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.modules.ava.messages.controllers.message_request_controller import (
     MessageRequestController,
+)
+from apps.modules.ava.messages.infra.crew_ai.repositories.ava_messages_repository import (
+    AvaMessagesRepository,
 )
 from apps.modules.ava.messages.schemas.create_message_body_schema import (
     CreateMessageBodySchema,
@@ -28,7 +31,9 @@ def get_create_message_service(
 ) -> CreateMessageService:
     """Get create message service."""
 
-    return CreateMessageService(session_factory)
+    ava_messages_repository = AvaMessagesRepository(session_factory)
+
+    return CreateMessageService(ava_messages_repository)
 
 
 # Routes
@@ -36,6 +41,7 @@ def get_create_message_service(
 async def create_ava_message_request(
     body: CreateMessageBodySchema,
     create_message_service: CreateMessageService = Depends(get_create_message_service),
+    x_ava_api_key: str = Header(None),
 ) -> str:
     """Create Ava message."""
 

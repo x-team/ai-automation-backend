@@ -1,6 +1,7 @@
 from fastapi.routing import APIRouter
 
 from apps.api.v1.routers import docs, monitor, rag
+from apps.api.v1.routers.ava import messages
 from apps.api.v1.routers.quinn import slides
 
 api_router = APIRouter()
@@ -14,3 +15,6 @@ api_router.include_router(docs.router, prefix="/v1")
 
 # Quinn Routers
 api_router.include_router(slides.router, prefix="/v1/quinn", tags=["Quinn"])
+
+# Ava Routers
+api_router.include_router(messages.router, prefix="/v1/ava", tags=["Ava"])

@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     # Quinn API key for authentication
     quinn_api_key: str = os.getenv("QUINN_API_KEY", "")
 
+    # Ava API key for authentication
+    ava_api_key: str = os.getenv("AVA_API_KEY", "")
+
     # Variables for Postgres
     postgres_host: str = os.getenv("POSTGRES_HOST", "127.0.0.1")
     postgres_port: str = os.getenv("POSTGRES_PORT", "5432")
@@ -62,8 +65,12 @@ class Settings(BaseSettings):
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_organization_id: str = os.getenv("OPENAI_ORGANIZATION_ID", "")
     openai_base_url: str = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-    base_openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-    reasoning_openai_model: str = os.getenv("OPENAI_REASONING_MODEL", "o3-mini")
+
+    base_openai_model: str = os.getenv("BASE_OPENAI_MODEL", "gpt-4o-mini")
+    base_reasoning_openai_model: str = os.getenv(
+        "BASE_REASONING_OPENAI_MODEL",
+        "o3-mini",
+    )
 
     # Storage provider
     storage_provider: Literal["disk", "s3"] = os.getenv("STORAGE_PROVIDER", "disk")  # type: ignore[assignment]

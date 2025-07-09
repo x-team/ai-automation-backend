@@ -162,23 +162,6 @@ async def generate_slides(
     input_spreadsheet_row = body.input_spreadsheet_row
     structured_questions_file_drive_url = body.structured_questions_file_drive_url
 
-    # Drive - Copy Template Slides
-    google_drive_copy_file = await google_drive_file_controller.copy(
-        settings.quinn_google_drive_template_slides_id,
-        copy_google_drive_file_service,
-    )
-    if not google_drive_copy_file or not google_drive_copy_file["id"]:
-        raise HTTPException(status_code=404, detail="Template slides file not found")
-
-    # Drive - Update file name
-    await google_drive_file_controller.update(
-        google_drive_copy_file.get("id", ""),
-        {
-            "name": f"Quinn_presentation_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
-        },
-        update_google_drive_file_service,
-    )
-
     # Get the dict content of the source file
     source_file_drive_id = get_google_drive_id(source_file_drive_url)
     if not source_file_drive_id:
@@ -196,6 +179,23 @@ async def generate_slides(
             structured_questions_file_drive_url,
             show_google_drive_file_service,
         )
+
+    # Drive - Copy Template Slides
+    google_drive_copy_file = await google_drive_file_controller.copy(
+        settings.quinn_google_drive_template_slides_id,
+        copy_google_drive_file_service,
+    )
+    if not google_drive_copy_file or not google_drive_copy_file["id"]:
+        raise HTTPException(status_code=404, detail="Template slides file not found")
+
+    # Drive - Update file name
+    await google_drive_file_controller.update(
+        google_drive_copy_file.get("id", ""),
+        {
+            "name": f"Quinn_presentation_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
+        },
+        update_google_drive_file_service,
+    )
 
     # Get the analyze survey data prompt
     analyze_survey_data_prompt = await analyze_survey_data_llm_controller.show(

@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from apps.api.lifespan import lifespan_setup
 from apps.api.router import api_router
 from apps.core.config import settings
+from apps.core.middlewares.ava_server_middleware import AvaServerMiddleware
 from apps.core.middlewares.quinn_server_middleware import QuinnServerMiddleware
 from apps.core.utils.logger import configure_logging
 
@@ -45,6 +46,9 @@ def get_app() -> FastAPI:
 
     # Quinn server middleware
     app.add_middleware(QuinnServerMiddleware)
+
+    # Ava server middleware
+    app.add_middleware(AvaServerMiddleware)
 
     if settings.storage_provider == "disk":
         # Static files for disk storage
