@@ -10,8 +10,8 @@ from apps.modules.shared.rag.services.list_resource_chunks import (
 )
 
 
-class AvaSearchHandbookFAQ(BaseTool):
-    """Search the Handbook and FAQ for information."""
+class AvaSearchXteamDocuments(BaseTool):
+    """Search the Handbook, FAQ, and Relevant Links for information."""
 
     def __init__(
         self,
@@ -29,7 +29,7 @@ class AvaSearchHandbookFAQ(BaseTool):
         self,
         query: str,
     ) -> str:
-        """Search the Handbook and FAQ for information."""
+        """Search the Handbook, FAQ, and Relevant Links for information."""
 
         async with self._session_factory() as session:
             resource_chunks_repository = ResourceChunksRepository(session)
@@ -39,7 +39,7 @@ class AvaSearchHandbookFAQ(BaseTool):
             vector_search_results = await list_resource_chunks_service.execute(
                 query=query,
                 chunk_top_k=10,
-                resource_names=["handbook_faq.csv"],
+                resource_names=["handbook_faq.csv", "ava_relevant_links.csv"],
             )
 
             vector_search = "\n".join(

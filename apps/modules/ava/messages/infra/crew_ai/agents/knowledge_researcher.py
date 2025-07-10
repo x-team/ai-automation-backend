@@ -10,7 +10,7 @@ class KnowledgeResearcher(Agent):
         super().__init__(
             role="Internal Knowledge Researcher",
             goal="""
-                Find and retrieve accurate, up-to-date information from the X-Team Handbook FAQ.
+                Find and retrieve accurate, up-to-date information from the X-Team Handbook FAQ or X-Team Relevant Links.
             """,
             backstory="""
                 You are a documentation specialist at X-Team. Your obsession is to ensure

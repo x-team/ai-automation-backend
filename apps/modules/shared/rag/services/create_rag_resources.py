@@ -94,8 +94,8 @@ class CreateRAGResourcesService:
                 [
                     ResourceChunkModel(
                         resource_id=resource_created.id,
-                        chunk_index=i,
                         text=chunk,
+                        chunk_index=i,
                         embedding=embedding,
                     )
                     for i, (chunk, embedding) in enumerate(zip(chunks, embeddings))

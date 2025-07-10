@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import UUID, ForeignKey, Integer, String
+from sqlalchemy import UUID, ForeignKey, Identity, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -31,7 +31,7 @@ class ResourceChunkModel(BaseModel):
         nullable=False,
     )
     text = mapped_column(String, nullable=False)
-    chunk_index = mapped_column(Integer, nullable=False)
+    chunk_index = mapped_column(Integer, Identity(start=0), nullable=False)
     embedding = mapped_column(Vector(N_DIM), nullable=False)
     resource: Mapped["ResourceModel"] = relationship(
         "ResourceModel",
