@@ -24,7 +24,7 @@ class KnowledgeResearcherTask(Task):
                 such as their roles, responsibilities, and areas of ownership.
                 If the topic involves a person, process, or policy, consider phrasing the question broadly enough to include context or follow-up details.
 
-                Use the user's query to search the Handbook FAQ: {user_query}
+                Use the user's query to search the Handbook FAQ or X-Team Relevant Links: {user_query}
             """,
             expected_output="The exact result from the Handbook FAQ or X-Team Relevant Links search, without any rephrasing or summarization. If nothing is found, return a clear note about it.",
             agent=agent,
@@ -34,7 +34,7 @@ class KnowledgeResearcherTask(Task):
                     description="""
                         Retrieves accurate, up-to-date information from the X-Team Handbook, FAQ or relevant links.
                         It includes official policies, internal procedures, and details about key people in the company — such as their roles, responsibilities, and areas of ownership.
-                        It also includes links to relevant pages from X-Team.
+                        It can also include links to relevant pages from X-Team.
                     """,
                     session_factory=session_factory,
                 ),

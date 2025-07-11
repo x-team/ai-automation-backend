@@ -39,7 +39,7 @@ class AvaSearchXteamDocuments(BaseTool):
             vector_search_results = await list_resource_chunks_service.execute(
                 query=query,
                 chunk_top_k=10,
-                resource_names=["handbook_faq.csv", "ava_relevant_links.csv"],
+                resource_names=["ava_relevant_links.csv", "handbook_faq.csv"],
             )
 
             vector_search = "\n".join(
