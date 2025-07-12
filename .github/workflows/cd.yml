@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - build/openvpn-client
 
 jobs:
   deploy:
